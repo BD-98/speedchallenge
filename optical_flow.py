@@ -17,6 +17,7 @@ parser.add_argument('--position_and_content', default=False, action='store_true'
 args = parser.parse_args()
 
 model: torch.nn.Module = RAFTGMA(args).to(device)
+model.load_state_dict(torch.load("GMA/checkpoints/gma-things.pth", map_location=device))
 test_img1 = torch.tensor(cv2.imread("data/train-frames/10.jpg")).permute(2,1,0).unsqueeze(0)
 test_img2 = torch.tensor(cv2.imread("data/train-frames/11.jpg")).permute(2,1,0).unsqueeze(0)
 out = model(test_img1, test_img2)
