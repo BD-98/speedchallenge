@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F 
 import numpy as np 
 import matplotlib.pyplot as plt 
+from PIL import Image
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
