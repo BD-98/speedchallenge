@@ -1,46 +1,22 @@
-from torch.serialization import load
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 import numpy as np 
-import cv2 
-import torch 
-import os 
-from natsort import natsorted
-from torchvision.transforms import transforms
+import torch
+from torchvision.datasets import ImageFolder
 
 
 class OFDataset(Dataset):
-    def __init__(self, train=True):
-        self.train_path = "data/of-train-images-color"
-        self.test_path = "data/of-test-images-color"
+    def __init__(self, root, transform, train=True):
+        self.data = ImageFolder(root, transform=transform)
         self.train = train
-        
     
-    def load_images(self):
+    def __getitem__(self, idx):
         if self.train:
-            train_images = natsorted([cv2.imread(str(os.path.join(self.train_path, img)) for img in os.listdir(self.train_path))])
-            return torch.cat(train_images)
-          
+            images, _ = self.data[idx]
+            labels = torch.tensor(np.loadtxt("data/train.txt"))[idx]
+            return (images, labels)
         else:
-            test_images = natsorted(cv2.imread([str(os.path.join(self.test_path, img)) for img in os.listdir(self.test_path)]))
-            return torch.cat(test_images)
-        
-    def __getitem__(self, index):
-        data_images = self.load_images()[index]
-        labels = torch.tensor(np.loadtxt("data/train.txt"))[index]
-        if self.train:
-            return (data_images, labels)
-        else:
-            return data_images
-    
+            return self.data[idx]    
     def __len__(self):
-        return len(self.load_images())
+        return len(self.data)
 
 
-
-a = OFDataset()
-print(a[0])
-
-
-
-    
-        
